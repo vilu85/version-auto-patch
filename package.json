@@ -1,31 +1,41 @@
 {
-    "name": "version-auto-patch",
-    "description": "Automatically patches the version number in specified package.json files",
-    "version": "1.0.0",
-    "main": "index.js",
-    "scripts": {
-        "version-auto-patch": "node index.js",
-		"test": "jest"
-    },
-    "bin": {
-        "version-auto-patch": "index.js"
-    },
-    "keywords": [
-        "npm",
-        "version",
-        "utilitity",
-        "webpack",
-        "plugin",
-        "versioning"
-    ],
-    "author": "Ville Perkkio",
-    "license": "MIT",
-    "homepage": "https://github.com/vilu85/version-auto-patch",
-    "dependencies": {
-        "fs": "^0.0.1-security",
-        "path": "^0.12.7"
-    },
-    "devDependencies": {
-        "jest": "^29.4.3"
-    }
+  "name": "version-auto-patch",
+  "description": "Automatically patches the version number in specified package.json files",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "version-auto-patch": "node index.js",
+    "test": "jest"
+  },
+  "bin": {
+    "version-auto-patch": "index.js"
+  },
+  "keywords": [
+    "npm",
+    "version",
+    "utilitity",
+    "webpack",
+    "plugin",
+    "versioning"
+  ],
+  "author": "Ville Perkkio",
+  "license": "MIT",
+  "homepage": "https://github.com/vilu85/version-auto-patch",
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "jest": "^29.4.3"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vilu85/version-auto-patch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vilu85/version-auto-patch/issues"
+  }
 }

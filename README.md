@@ -36,8 +36,13 @@ Overall, this plugin helps to streamline your development process by automating 
 ## Installation
 
 ```sh
+npm install version-auto-patch
+```
+
+```sh
 npm install
 ```
+
 ## Usage
 
 ## Options
