@@ -51,9 +51,12 @@ npm install
 VersionAutoPatchPlugin supports the following options, which can be passed as an object in the constructor:
 
 **files**	-	A string or an array of strings indicating the file or files to be patched. By default, the package.json file will be patched.
-**disabled**: 	*optional*	A boolean value that, if set to true, disables the automatic version patching.
-**version**: 	*optional*	A string value that, if provided, will change the version to a specific value instead of incrementing the patch number.
-**type**: 	*optional*	A string value that indicates the type of version increment to apply. Accepted values are major, minor, or patch. By default, the *patch* version will be incremented.
+
+**disabled** 	*optional*	A boolean value that, if set to true, disables the automatic version patching.
+
+**version** 	*optional*	A string value that, if provided, will change the version to a specific value instead of incrementing the patch number.
+
+**type** 	*optional*	A string value that indicates the type of version increment to apply. Accepted values are major, minor, or patch. By default, the *patch* version will be incremented.
 
 See example how to implement configuration from below.
 
