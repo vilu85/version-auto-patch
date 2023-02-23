@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const { promisify } = require('util');
 
 /**
  * Copyright (c) 2023 Ville Perkkio
@@ -26,32 +25,35 @@ const { promisify } = require('util');
  */
 
 const join = path.join;
-const writeFile = promisify(fs.writeFile);
 
 const mockFiles = {
-	'package.json': {
-		'version': '1.0.0',
+	[join(__dirname, 'package.json')]: {
+		version: '1.0.0',
 	},
 };
 
 jest.mock('fs', () => {
 	return {
-	  readFileSync: jest.fn().mockImplementation((file, encoding) => {
-		return JSON.stringify(mockFiles[file]);
-	  }),
-	  writeFile: jest.fn().mockImplementation((file, data, cb) => {
-		mockFiles[file] = JSON.parse(data);
-		cb(null);
-	  }),
-	  writeFileSync: jest.fn().mockImplementation((file, data, cb) => {
-		mockFiles[file] = JSON.parse(data);
-		cb(null);
-	  }),
+		readFileSync: jest.fn().mockImplementation((file) => {
+			return JSON.stringify(mockFiles[file]);
+		}),
+		writeFile: jest.fn().mockImplementation((file, data, cb) => {
+			mockFiles[file] = JSON.parse(data);
+			cb(null);
+		}),
+		writeFileSync: jest.fn().mockImplementation((file, data, cb) => {
+			mockFiles[file] = JSON.parse(data);
+			cb(null);
+		}),
 	};
 });
 
-const readFileSync = jest.fn().mockImplementation((file, encoding) => {
+const readFileSync = jest.fn().mockImplementation((file) => {
 	return JSON.stringify(mockFiles[file]);
+});
+
+const writeJsonFile = jest.fn().mockImplementation((file, data) => {
+	mockFiles[file] = data;
 });
 
 const VersionAutoPatchPlugin = require('../index');
@@ -60,14 +62,14 @@ describe('VersionAutoPatchPlugin', () => {
 	let versionAutoPatchPlugin;
 	beforeEach(() => {
 		versionAutoPatchPlugin = new VersionAutoPatchPlugin({
-			files: ['package.json'],
+			files: [join(__dirname, 'package.json')],
 			type: 'patch',
 		});
 	});
 
 	afterEach(() => {
 		mockFiles[join(__dirname, 'package.json')] = {
-			'version': '1.0.0'
+			version: '1.0.0',
 		};
 	});
 
@@ -83,6 +85,66 @@ describe('VersionAutoPatchPlugin', () => {
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.0.1');
 	});
 
+	it('should increment the patch version of package.json for complex SemVer version numbers', async () => {
+		// Set up the test by writing a package.json file with a complex SemVer version number
+		const file = join(__dirname, 'package.json');
+		const initialVersion = '1.0.0-alpha+001';
+		const packageJson = {
+			name: 'test-package',
+			version: initialVersion,
+			description: 'A test package for VersionAutoPatchPlugin',
+			author: 'Jane Doe',
+			main: 'index.js',
+		};
+
+		await writeJsonFile(file, packageJson);
+
+		// Increment the version number using VersionAutoPatchPlugin
+		const versionAutoPatchPlugin = new VersionAutoPatchPlugin({
+			files: [file],
+		});
+		await versionAutoPatchPlugin.updateVersion();
+
+		// Verify that the version number was incremented correctly
+		const content = await readFileSync(file, 'utf8');
+		const json = JSON.parse(content);
+		expect(fs.writeFile).toHaveBeenCalledTimes(2);
+		expect(json.version).toBe('1.0.1-alpha+001');
+		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.0.1-alpha+001');
+
+		// Set up the test for the second complex SemVer version number
+		packageJson.version = '1.0.0+20130313144700';
+		await writeJsonFile(file, packageJson);
+
+		// Increment the version number using VersionAutoPatchPlugin
+		await versionAutoPatchPlugin.updateVersion();
+
+		// Verify that the version number was incremented correctly
+		const content2 = await readFileSync(file, 'utf8');
+		const json2 = JSON.parse(content2);
+		expect(fs.writeFile).toHaveBeenCalledTimes(3);
+		expect(json2.version).toBe('1.0.1+20130313144700');
+		expect(versionAutoPatchPlugin.getNewVersion()).toBe(
+			'1.0.1+20130313144700'
+		);
+
+		// Set up the test for the third complex SemVer version number
+		packageJson.version = '1.0.0-beta+exp.sha.5114f85';
+		await writeJsonFile(file, packageJson);
+
+		// Increment the version number using VersionAutoPatchPlugin
+		await versionAutoPatchPlugin.updateVersion();
+
+		// Verify that the version number was incremented correctly
+		const content3 = await readFileSync(file, 'utf8');
+		const json3 = JSON.parse(content3);
+		expect(fs.writeFile).toHaveBeenCalledTimes(4);
+		expect(json3.version).toBe('1.0.1-beta+exp.sha.5114f85');
+		expect(versionAutoPatchPlugin.getNewVersion()).toBe(
+			'1.0.1-beta+exp.sha.5114f85'
+		);
+	});
+
 	it('should disable version patching', async () => {
 		versionAutoPatchPlugin = new VersionAutoPatchPlugin({
 			files: ['package.json'],
@@ -96,9 +158,11 @@ describe('VersionAutoPatchPlugin', () => {
 		const content = readFileSync(file, 'utf8');
 		const json = JSON.parse(content);
 
-		expect(fs.writeFile).toHaveBeenCalledTimes(1);
+		expect(fs.writeFile).toHaveBeenCalledTimes(4);
 		expect(json.version).toBe('1.0.0');
-		expect(() => versionAutoPatchPlugin.getNewVersion()).toThrowError('Version is not changed yet.');
+		expect(() => versionAutoPatchPlugin.getNewVersion()).toThrowError(
+			'Version is not changed yet.'
+		);
 	});
 
 	it('should change the version to a specific version', async () => {
@@ -114,7 +178,7 @@ describe('VersionAutoPatchPlugin', () => {
 		const content = readFileSync(file, 'utf8');
 		const json = JSON.parse(content);
 
-		expect(fs.writeFile).toHaveBeenCalledTimes(2);
+		expect(fs.writeFile).toHaveBeenCalledTimes(5);
 		expect(json.version).toBe('2.0.0');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe('2.0.0');
 	});
@@ -137,7 +201,7 @@ describe('VersionAutoPatchPlugin used as a webpack plugin', () => {
 
 	beforeEach(() => {
 		plugin = new VersionAutoPatchPlugin({
-			files: ['package.json']
+			files: ['package.json'],
 		});
 		mockCompiler = {
 			hooks: {
@@ -151,14 +215,17 @@ describe('VersionAutoPatchPlugin used as a webpack plugin', () => {
 	});
 
 	afterEach(() => {
-		mockFiles['package.json'].version = '1.0.0';
+		mockFiles[join(__dirname, 'package.json')].version = '1.0.0';
 	});
 
 	describe('apply', () => {
 		it('should call updateVersion when emit hook is triggered', (done) => {
 			plugin.apply(mockCompiler);
 
-			expect(mockCompiler.hooks.emit.tapAsync).toHaveBeenCalledWith('done', expect.any(Function));
+			expect(mockCompiler.hooks.emit.tapAsync).toHaveBeenCalledWith(
+				'done',
+				expect.any(Function)
+			);
 
 			mockCompiler.hooks.emit.tapAsync.mock.calls[0][1](null, () => {
 				expect(plugin.getNewVersion()).not.toBeNull();
