@@ -1,6 +1,6 @@
-var fs = require('fs');
-var path = require('path');
-var join = path.join;
+const fs = require('fs');
+const path = require('path');
+const join = path.join;
 
 /**
  * Copyright (c) 2023 Ville Perkkio
@@ -38,7 +38,7 @@ class VersionAutoPatchPlugin {
 	 * @param {string} [options.type='patch'] - Specifies the type of version update: 'major', 'minor', or 'patch'.
 	 */
 	constructor(options) {
-		let _options = {
+		const _options = {
 			disabled: false || (options && options.disabled === true),
 		};
 		if (!_options.disabled) {
@@ -49,7 +49,10 @@ class VersionAutoPatchPlugin {
 			this.context = path.dirname(module.parent.filename);
 
 			// allows for a single string entry
-			if (typeof this.files === 'string' || this.files instanceof String) {
+			if (
+				typeof this.files === 'string' ||
+				this.files instanceof String
+			) {
 				this.files = [options.files];
 			}
 		} else {
@@ -64,10 +67,13 @@ class VersionAutoPatchPlugin {
 			const regex =
 				/(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)((?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/gm;
 			const oldVersion = regex.exec(jsonVersion);
-			const incrementType = ['major', 'minor', 'patch'].indexOf(this.type.toLowerCase());
+			const incrementType = ['major', 'minor', 'patch'].indexOf(
+				this.type.toLowerCase()
+			);
 			const substParts = ['$1', '$2', '$3'];
-			substParts[incrementType] = parseInt(oldVersion[incrementType + 1]) + 1;
-			const subst = version ?? substParts.join('.') + `$4`;
+			substParts[incrementType] =
+				parseInt(oldVersion[incrementType + 1]) + 1;
+			const subst = version ?? substParts.join('.') + '$4';
 			this.newVersion = jsonVersion.replace(regex, subst);
 
 			if (this.newVersion) {
@@ -78,7 +84,12 @@ class VersionAutoPatchPlugin {
 
 			return json;
 		} catch (/** @type {Error} */ error) {
-			throw new Error('Error: Failed to increase ' + this.type + ' version number: ' + error.message);
+			throw new Error(
+				'Error: Failed to increase ' +
+					this.type +
+					' version number: ' +
+					error.message
+			);
 		}
 	}
 
@@ -93,9 +104,12 @@ class VersionAutoPatchPlugin {
 	 */
 	async updateVersion() {
 		this.files.forEach((e) => {
-			const file = join(this.context, e);
-			const json = this.bump(e, this.version);
-			fs.writeFile(file, JSON.stringify(json, null, 2), function (err) {
+			const filepath =
+				path.dirname(e) === '.' ? this.context : path.dirname(e);
+			const filename = path.basename(e);
+			const file = join(filepath, filename);
+			const json = this.bump(file, this.version);
+			fs.writeFile(file, JSON.stringify(json, null, 2), (err) => {
 				if (err) throw err;
 			});
 		});

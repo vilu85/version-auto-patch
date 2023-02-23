@@ -30,7 +30,7 @@
 
 The Version Auto Patch plugin is a tool that can be used to automatically increment the version number of your code after every build. This is especially useful during development, where you can run "npm watch" to watch for changes in your code and recompile automatically. The plugin can also be disabled during production builds to avoid unwanted version changes.
 
-To use the plugin, you simply specify the path or paths to the package.json files that you want to patch, and the type of version update you want to make (major, minor, or patch). If you want to set the version to a specific value instead of incrementing it, you can also specify the version number.
+The plugin supports patching any version number that uses SemVer versioning. To use the plugin, you simply specify the path or paths to the package.json files that you want to patch, and the type of version update you want to make (major, minor, or patch). If you want to set the version to a specific value instead of incrementing it, you can also specify the version number.
 
 Overall, this plugin helps to streamline your development process by automating version updates and reducing the risk of human error.
 
