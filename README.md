@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000)
+![Version](https://img.shields.io/badge/version-1.1.0-blue.svg?cacheSeconds=2592000)
 ![Node.js](https://github.com/vilu85/version-auto-patch/actions/workflows/node.js.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#)
 [![Twitter: vilutex85](https://img.shields.io/twitter/follow/vilutex85.svg?style=social)](https://twitter.com/vilutex85)
