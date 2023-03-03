@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/version-1.1.0-blue.svg?cacheSeconds=2592000)
+![Version](https://img.shields.io/badge/version-1.2.0-blue.svg?cacheSeconds=2592000)
 ![Node.js](https://github.com/vilu85/version-auto-patch/actions/workflows/node.js.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#)
 [![Twitter: vilutex85](https://img.shields.io/twitter/follow/vilutex85.svg?style=social)](https://twitter.com/vilutex85)
@@ -56,7 +56,7 @@ VersionAutoPatchPlugin supports the following options, which can be passed as an
 
 **version** 	*optional*	A string value that, if provided, will change the version to a specific value instead of incrementing the patch number.
 
-**type** 	*optional*	A string value that indicates the type of version increment to apply. Accepted values are major, minor, or patch. By default, the *patch* version will be incremented.
+**type** 	*optional*	A string value that indicates the type of version increment to apply. Accepted values are major, minor, patch, prerelease or build. By default, the *patch* version will be incremented.
 
 See example how to implement configuration from below.
 
