@@ -76,7 +76,10 @@ class VersionAutoPatchPlugin {
 			} else {
 				const patchPart = oldVersion[incrementType + 1];
 				const numericStartOffset = patchPart.search(/\d+$/);
-				const patchedNumericPart = parseInt(patchPart.substring(numericStartOffset, patchPart.length)) + 1;
+				// FIXME: The version doesn't increase as it should if the part begins with one or more zeros
+				//			for example: "1.0.0-alpha+001" turns to "1.0.0-alpha+2" because patchedNumericPart
+				//			is first converted from string to int "001" => 1.
+				const patchedNumericPart = parseInt(patchPart.substring(numericStartOffset)) + 1;
 				substParts[incrementType] = patchPart.substring(0, numericStartOffset) + patchedNumericPart;
 			}
 
