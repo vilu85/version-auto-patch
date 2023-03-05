@@ -1,5 +1,5 @@
 ![Version](https://img.shields.io/badge/version-1.2.0-blue.svg?cacheSeconds=2592000)
-![Node.js](https://github.com/vilu85/version-auto-patch/actions/workflows/node.js.yml/badge.svg)
+![Node.js](https://github.com/vilu85/version-auto-patch/actions/workflows/node.js.yml/badge.svg?branch=main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#)
 [![Twitter: vilutex85](https://img.shields.io/twitter/follow/vilutex85.svg?style=social)](https://twitter.com/vilutex85)
 # VersionAutoPatchPlugin
@@ -13,6 +13,7 @@
 - [Project Name](#version-auto-patch)
   - [Table of contents](#table-of-contents)
   - [Getting Started](#getting-started)
+  - [Limitations](#limitations)
   - [Installation](#installation)
   	- [Usage](#usage)
 		- [Options](#options)
@@ -30,9 +31,16 @@
 
 The Version Auto Patch plugin is a tool that can be used to automatically increment the version number of your code after every build. This is especially useful during development, where you can run "npm watch" to watch for changes in your code and recompile automatically. The plugin can also be disabled during production builds to avoid unwanted version changes.
 
-The plugin supports patching any version number that uses SemVer versioning. To use the plugin, you simply specify the path or paths to the package.json files that you want to patch, and the type of version update you want to make (major, minor, or patch). If you want to set the version to a specific value instead of incrementing it, you can also specify the version number.
+The plugin supports patching any version number that uses SemVer versioning. To use the plugin, you simply specify the path or paths to the package.json files that you want to patch, and the type of version update you want to make (major, minor, patch, prerelease, build). If you want to set the version to a specific value instead of incrementing it, you can also specify the version number.
 
 Overall, this plugin helps to streamline your development process by automating version updates and reducing the risk of human error.
+
+## Limitations
+The Version Auto Patch plugin updates the numerical value found at the end of the version part that you have set to be updated. This means that any version number part that ends with a number can be patched using the plugin.
+
+However, please note that currently the plugin cannot update the build number from a version number like "1.0.0+21AF26D3----117B344092BD" because the build number does not end with a numeric value.
+
+Additionally, in order for the plugin to update a version number part, it must be present in the original version number. For instance, if the version number does not have a build part (e.g. "1.0.0-beta0.2"), the build number cannot be updated. Similarly, if the version number does not have a pre-release part, it cannot be updated either.
 
 ## Installation
 
@@ -40,13 +48,9 @@ Overall, this plugin helps to streamline your development process by automating 
 npm install version-auto-patch
 ```
 
-```sh
-npm install
-```
-
 ## Usage
 
-## Options
+### Options ###
 
 VersionAutoPatchPlugin supports the following options, which can be passed as an object in the constructor:
 
@@ -56,7 +60,7 @@ VersionAutoPatchPlugin supports the following options, which can be passed as an
 
 **version** 	*optional*	A string value that, if provided, will change the version to a specific value instead of incrementing the patch number.
 
-**type** 	*optional*	A string value that indicates the type of version increment to apply. Accepted values are major, minor, patch, prerelease or build. By default, the *patch* version will be incremented.
+**type** 	*optional*	A string value that indicates the type of version increment to apply. Accepted values are *major*, *minor*, *patch*, *prerelease* or *build*. By default, the *patch* version will be incremented.
 
 See example how to implement configuration from below.
 
