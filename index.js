@@ -64,24 +64,39 @@ class VersionAutoPatchPlugin {
 		try {
 			const json = JSON.parse(fs.readFileSync(file).toString());
 			const jsonVersion = json.version;
-			const regex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:(-)((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:(\+)([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/gm;
+			const regex =
+				/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:(-)((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:(\+)([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/gm;
 			const oldVersion = regex.exec(jsonVersion);
-			const incrementType = ['major', 'minor', 'patch', 'separator', 'prerelease', 'separator', 'build'].indexOf(
-				this.type.toLowerCase()
-			);
+			const incrementType = [
+				'major',
+				'minor',
+				'patch',
+				'separator',
+				'prerelease',
+				'separator',
+				'build',
+			].indexOf(this.type.toLowerCase());
 			const substParts = ['$1', '$2', '$3', '$4', '$5', '$6', '$7'];
-			if(incrementType <= 2) {
+			if (incrementType <= 2) {
 				substParts[incrementType] =
 					parseInt(oldVersion[incrementType + 1]) + 1;
 			} else {
 				const patchPart = oldVersion[incrementType + 1];
 				const numericStartOffset = patchPart.search(/\d+$/);
-				const patchedNumericPart = parseInt(patchPart.substring(numericStartOffset)) + 1;
-				const paddedNumericPart = patchedNumericPart.toString().padStart(patchPart.length - numericStartOffset, '0');
-				substParts[incrementType] = patchPart.substring(0, numericStartOffset) + paddedNumericPart;
+				const patchedNumericPart =
+					parseInt(patchPart.substring(numericStartOffset)) + 1;
+				const paddedNumericPart = patchedNumericPart
+					.toString()
+					.padStart(patchPart.length - numericStartOffset, '0');
+				substParts[incrementType] =
+					patchPart.substring(0, numericStartOffset) +
+					paddedNumericPart;
 			}
 
-			const subst = version ?? substParts.slice(0,3).join('.') + substParts.slice(3,7).join('');
+			const subst =
+				version ??
+				substParts.slice(0, 3).join('.') +
+					substParts.slice(3, 7).join('');
 			this.newVersion = jsonVersion.replace(regex, subst);
 
 			if (this.newVersion) {

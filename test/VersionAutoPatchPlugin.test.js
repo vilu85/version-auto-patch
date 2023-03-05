@@ -162,7 +162,7 @@ describe('VersionAutoPatchPlugin', () => {
 		// Increment the version number using VersionAutoPatchPlugin
 		const versionAutoPatchPlugin = new VersionAutoPatchPlugin({
 			files: [file],
-			type: 'prerelease'
+			type: 'prerelease',
 		});
 		await versionAutoPatchPlugin.updateVersion();
 
@@ -185,9 +185,7 @@ describe('VersionAutoPatchPlugin', () => {
 		const json3 = JSON.parse(content3);
 		expect(fs.writeFile).toHaveBeenCalledTimes(6);
 		expect(json3.version).toBe('1.0.0-0.3.8');
-		expect(versionAutoPatchPlugin.getNewVersion()).toBe(
-			'1.0.0-0.3.8'
-		);
+		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.0.0-0.3.8');
 
 		// Set up the test for the version number with prerelease and build number
 		packageJson.version = '1.0.0-x.7.z.92';
@@ -201,9 +199,7 @@ describe('VersionAutoPatchPlugin', () => {
 		const json2 = JSON.parse(content2);
 		expect(fs.writeFile).toHaveBeenCalledTimes(7);
 		expect(json2.version).toBe('1.0.0-x.7.z.93');
-		expect(versionAutoPatchPlugin.getNewVersion()).toBe(
-			'1.0.0-x.7.z.93'
-		);
+		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.0.0-x.7.z.93');
 	});
 
 	it('should increment the build version of package.json', async () => {
@@ -223,7 +219,7 @@ describe('VersionAutoPatchPlugin', () => {
 		// Increment the version number using VersionAutoPatchPlugin
 		const versionAutoPatchPlugin = new VersionAutoPatchPlugin({
 			files: [file],
-			type: 'build'
+			type: 'build',
 		});
 		await versionAutoPatchPlugin.updateVersion();
 
