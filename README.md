@@ -36,6 +36,7 @@ The plugin supports patching any version number that uses SemVer versioning. To 
 Overall, this plugin helps to streamline your development process by automating version updates and reducing the risk of human error.
 
 ## Limitations
+
 The Version Auto Patch plugin updates the numerical value found at the end of the version part that you have set to be updated. This means that any version number part that ends with a number can be patched using the plugin.
 
 However, please note that currently the plugin cannot update the build number from a version number like "1.0.0+21AF26D3----117B344092BD" because the build number does not end with a numeric value.
