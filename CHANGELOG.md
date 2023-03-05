@@ -1,3 +1,7 @@
+## 1.2.0 (2023-03-05)
+
+- Added option to update pre-release and build numbers.
+
 ## 1.1.0 (2023-02-23)
 
 - Added capability to update any version that adheres to the SemVer standard.
