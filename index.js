@@ -42,7 +42,7 @@ class VersionAutoPatchPlugin {
 			disabled: false || (options && options.disabled === true),
 		};
 		if (!_options.disabled) {
-			this.files = options?.files || [];
+			this.files = options?.files || ['package.json'];
 			this.version = options?.version;
 			this.type = options?.type ?? 'patch';
 			this.newVersion = null;
@@ -80,6 +80,11 @@ class VersionAutoPatchPlugin {
 			if (incrementType <= 2) {
 				substParts[incrementType] =
 					parseInt(oldVersion[incrementType + 1]) + 1;
+				for (let index = 0; index < 3; index++) {
+					if (incrementType < index) {
+						substParts[index] = '0';
+					}
+				}
 			} else {
 				const patchPart = oldVersion[incrementType + 1];
 				const numericStartOffset = patchPart.search(/\d+$/);
@@ -91,6 +96,12 @@ class VersionAutoPatchPlugin {
 				substParts[incrementType] =
 					patchPart.substring(0, numericStartOffset) +
 					paddedNumericPart;
+			}
+
+			for (let index = substParts.length; index > 2; index--) {
+				if (incrementType < index) {
+					substParts[index] = '';
+				}
 			}
 
 			const subst =
