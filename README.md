@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/version-1.2.0-blue.svg?cacheSeconds=2592000)
+![Version](https://img.shields.io/badge/version-1.2.1-blue.svg?cacheSeconds=2592000)
 ![Node.js](https://github.com/vilu85/version-auto-patch/actions/workflows/node.js.yml/badge.svg?branch=main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#)
 [![Twitter: vilutex85](https://img.shields.io/twitter/follow/vilutex85.svg?style=social)](https://twitter.com/vilutex85)
@@ -55,19 +55,19 @@ npm install version-auto-patch
 
 VersionAutoPatchPlugin supports the following options, which can be passed as an object in the constructor:
 
-**files**	-	A string or an array of strings indicating the file or files to be patched. By default, the package.json file will be patched.
+**files**		-			A string or an array of strings indicating the file or files to be patched. By default, the package.json file will be patched.
 
 **disabled** 	*optional*	A boolean value that, if set to true, disables the automatic version patching.
 
 **version** 	*optional*	A string value that, if provided, will change the version to a specific value instead of incrementing the patch number.
 
-**type** 	*optional*	A string value that indicates the type of version increment to apply. Accepted values are *major*, *minor*, *patch*, *prerelease* or *build*. By default, the *patch* version will be incremented.
+**type**		*optional*	A string value that indicates the type of version increment to apply. Accepted values are *major*, *minor*, *patch*, *prerelease* or *build*. By default, the *patch* version will be incremented.
 
 See example how to implement configuration from below.
 
 ### Webpack plugin ###
 
-Example of how to automatically increase the patch version during development (`npm watch`) while disabling this behavior when compiling a production build with webpack:
+Example of how to automatically increase the patch version during development (`npm run watch` or other script watching changes) while disabling this behavior when compiling a production build with webpack:
 
 To add the VersionAutoPatchPlugin to your webpack configuration, simply include it in your list of plugins. Here's an example:
 
@@ -138,6 +138,36 @@ gulp.task('update-version', function (cb) {
 
 In this example, we create a new instance of the VersionAutoPatchPlugin with the desired options, and define a Gulp task called `update-version`. When this task is run, it calls the `updateVersion()` method on the plugin instance, which updates the version and saves the changes to the `package.json` file. If the update is successful, the task prints a message to the console and calls the `cb` callback to signal that it has completed. If there's an error, it prints an error message and calls `cb` with the error.
 
+Here is an example implementation for Gulp that demonstrates how to watch for changes in the code and update the build version accordingly:
+
+```javascript
+const gulp = require('gulp');
+const VersionAutoPatchPlugin = require('version-auto-patch');
+const versionPlugin = new VersionAutoPatchPlugin( {files: './package.json', type: 'build' });
+
+gulp.task('update-buildversion', (cb) => {
+	versionPlugin.updateVersion();
+	cb();
+});
+
+gulp.task('watchChanges', function () {
+	gulp.watch(
+		['./src/*.js'],
+		gulp.series(
+			"update-buildversion"
+		)
+	)
+});
+```
+
+In this example, we set up two Gulp tasks: `update-buildversion` and `watchChanges`.
+
+The `update-buildversion` task updates the build version by calling the `updateVersion` method of the VersionAutoPatchPlugin instance.
+
+The `watchChanges` task watches for changes in the _src_ directory using `gulp.watch` and triggers the `update-buildversion` task whenever a change is detected.
+
+This way, whenever a change is made to the code, the build version will be automatically updated to reflect the changes, making it easier to track the version history of the software.
+
 ### Other methods ###
 
 You can obtain the updated version string after running the task by calling the `getNewVersion()` method. This can be useful if you need to use the new version string in other parts of your code or in subsequent build steps.
@@ -147,6 +177,8 @@ const newVersion = versionPlugin.getNewVersion();
 ```
 
 ## Running the tests
+
+Jest test cases are included with this plugin to verify the increment of version numbers. To run the tests, simply install the Jest testing framework and execute the following command in your terminal:
 
 ```sh
 npm run test
