@@ -428,6 +428,40 @@ describe('VersionAutoPatchPlugin', () => {
 			/Error: Failed to increase patch version number: .*?/
 		);
 	});
+
+	it('should not increment the version of package.json during cooldown period', async () => {
+		// Set up the test by writing a package.json file with a build version number
+		const file = join(__dirname, 'package.json');
+		const initialVersion = '1.0.0+beta1';
+		const packageJson = {
+			name: 'test-package',
+			version: initialVersion,
+			description: 'A test package',
+			main: 'index.js',
+		};
+
+		await writeJsonFile(file, packageJson);
+
+		// Increment the version number using VersionAutoPatchPlugin
+		const versionAutoPatchPlugin = new VersionAutoPatchPlugin({
+			files: [file],
+			type: 'build',
+			cooldown: 2000
+		});
+		await versionAutoPatchPlugin.updateVersion();
+
+		// Verify that the version number was incremented correctly
+		const content = await readFileSync(file, 'utf8');
+		const json = JSON.parse(content);
+		expect(json.version).toBe('1.0.0+beta2');
+		expect(versionAutoPatchPlugin.isCooldownActive()).toBe(true);
+
+		// Attempt to increment version number again
+		await versionAutoPatchPlugin.updateVersion();
+
+		// Expect the version be the same because the cooldown was active
+		expect(json.version).toBe('1.0.0+beta2');
+	});
 });
 
 describe('VersionAutoPatchPlugin used as a webpack plugin', () => {
