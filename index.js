@@ -1,7 +1,3 @@
-const fs = require('fs');
-const path = require('path');
-const join = path.join;
-
 /**
  * Copyright (c) 2023 Ville Perkkio
  *
@@ -22,6 +18,16 @@ const join = path.join;
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ */
+
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const join = path.join;
+
+/**
+ * Automatically patches the version number.
  *
  * @class VersionAutoPatchPlugin
  */
@@ -36,6 +42,7 @@ class VersionAutoPatchPlugin {
 	 * @param {boolean} [options.disabled=false] - If true, version patching is disabled.
 	 * @param {string} [options.version] - If specified, the version will be set to this value instead of being incremented.
 	 * @param {string} [options.type='patch'] - Specifies the type of version update: 'major', 'minor', 'patch', 'prerelease', 'build'.
+	 * @param {number} [options.cooldown] - If specified, prevents the version from being updated more than once in a specified interval (ms).
 	 */
 	constructor(options) {
 		const _options = {
@@ -46,6 +53,8 @@ class VersionAutoPatchPlugin {
 			this.version = options?.version;
 			this.type = options?.type ?? 'patch';
 			this.newVersion = null;
+			this.cooldown = options?.cooldown || 0;
+			this.lastRun = 0;
 			this.context = path.dirname(module.parent.filename);
 
 			// allows for a single string entry
@@ -137,16 +146,20 @@ class VersionAutoPatchPlugin {
 	 * @memberof VersionAutoPatchPlugin
 	 */
 	async updateVersion() {
-		this.files.forEach((e) => {
-			const filepath =
-				path.dirname(e) === '.' ? this.context : path.dirname(e);
-			const filename = path.basename(e);
-			const file = join(filepath, filename);
-			const json = this.bump(file, this.version);
-			fs.writeFile(file, JSON.stringify(json, null, 2), (err) => {
-				if (err) throw err;
+		if (!this.isCooldownActive()) {
+			this.files.forEach((e) => {
+				const filepath =
+					path.dirname(e) === '.' ? this.context : path.dirname(e);
+				const filename = path.basename(e);
+				const file = join(filepath, filename);
+				const json = this.bump(file, this.version);
+				fs.writeFile(file, JSON.stringify(json, null, 2), (err) => {
+					if (err) throw err;
+				});
 			});
-		});
+
+			this.lastRun = Date.now();
+		}
 	}
 
 	/**
@@ -161,6 +174,20 @@ class VersionAutoPatchPlugin {
 		} else {
 			throw new Error('Version is not changed yet.');
 		}
+	}
+
+	/**
+	 * Returns true if the cooldown option is set and the version increment is currently disabled because
+	 * of the cooldown option.
+	 *
+	 * @returns {boolean}
+	 */
+	isCooldownActive() {
+		return (
+			this.cooldown &&
+			this.cooldown > 0 &&
+			Date.now() < this.lastRun + this.cooldown
+		);
 	}
 
 	/**

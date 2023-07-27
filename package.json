@@ -1,7 +1,7 @@
 {
   "name": "version-auto-patch",
   "description": "Automatically patches the version number in specified package.json files",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "main": "index.js",
   "scripts": {
     "version-auto-patch": "node index.js",

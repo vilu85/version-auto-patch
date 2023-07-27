@@ -1,7 +1,6 @@
-![Version](https://img.shields.io/badge/version-1.2.1-blue.svg?cacheSeconds=2592000)
+![Version](https://img.shields.io/badge/version-1.2.2-blue.svg?cacheSeconds=2592000)
 ![Node.js](https://github.com/vilu85/version-auto-patch/actions/workflows/node.js.yml/badge.svg?branch=main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#)
-[![Twitter: vilutex85](https://img.shields.io/twitter/follow/vilutex85.svg?style=social)](https://twitter.com/vilutex85)
 # VersionAutoPatchPlugin
 
 > Automatically patches the version number in specified package.json files
@@ -10,22 +9,24 @@
 
 ## Table of contents
 
-- [Project Name](#version-auto-patch)
-  - [Table of contents](#table-of-contents)
-  - [Getting Started](#getting-started)
-  - [Limitations](#limitations)
-  - [Installation](#installation)
-  	- [Usage](#usage)
+- [VersionAutoPatchPlugin](#versionautopatchplugin)
+		- [🏠 Homepage](#-homepage)
+	- [Table of contents](#table-of-contents)
+	- [Getting Started](#getting-started)
+	- [Limitations](#limitations)
+	- [Installation](#installation)
+	- [Usage](#usage)
 		- [Options](#options)
-		- [Webpack Plugin](#webpack-plugin)
+		- [Webpack plugin](#webpack-plugin)
 		- [Task runners like Gulp and Grunt](#task-runners-like-gulp-and-grunt)
 		- [Other methods](#other-methods)
-    - [Running the tests](#running-the-tests)
-  - [Issues](#issues)
-  - [Contributing](#contributing)
-  - [Versioning](#versioning)
-  - [Authors](#authors)
-  - [License](#license)
+		- [How to Use the cooldown Option](#how-to-use-the-cooldown-option)
+	- [Running the tests](#running-the-tests)
+	- [Issues](#issues)
+	- [Contributing](#contributing)
+	- [Versioning](#versioning)
+	- [Authors](#authors)
+	- [License](#license)
 
 ## Getting Started
 
@@ -63,7 +64,16 @@ VersionAutoPatchPlugin supports the following options, which can be passed as an
 
 **type**		*optional*	A string value that indicates the type of version increment to apply. Accepted values are *major*, *minor*, *patch*, *prerelease* or *build*. By default, the *patch* version will be incremented.
 
+**cooldown**	*optional*	A numeric value that specifies the interval during which the version will not be updated (in milliseconds). This option is particularly useful for preventing unintended loops caused by "hot refresh" or "hot reload" behavior triggered by certain bundlers.
+
 See example how to implement configuration from below.
+
+### The Purpose of the cooldown Option ###
+In certain scenarios, the VersionAutoPatchPlugin may encounter issues with updating the version number in the package.json file due to interactions with specific bundlers. Some bundlers or their configurations might initiate "hot refresh" or "hot reload" actions even when changes are made to the package.json file. As a result, the plugin can fall into a loop, continuously updating the version during these reloads, leading to unexpected behavior and potential conflicts.
+
+The cooldown option offers a simple yet effective solution to this problem. By setting a cooldown period, the plugin will avoid updating the version within the specified interval after the previous update. During this cooldown period, any further version updates will be deferred, preventing unnecessary loops caused by bundler-related reloads.
+
+For more information see [How to Use the cooldown Option](#how-to-use-the-cooldown-option).
 
 ### Webpack plugin ###
 
@@ -176,6 +186,18 @@ You can obtain the updated version string after running the task by calling the 
 const newVersion = versionPlugin.getNewVersion();
 ```
 
+### How to Use the cooldown Option ###
+
+To make use of the cooldown option, simply provide a numeric value representing the cooldown duration in milliseconds when initializing the VersionAutoPatchPlugin. For example:
+
+```javascript
+const versionPlugin = new VersionAutoPatchPlugin({
+  files: "./package.json",
+  type: "patch",
+  cooldown: 3000, // Set a cooldown of 3 seconds (3000 milliseconds).
+});
+```
+
 ## Running the tests
 
 Jest test cases are included with this plugin to verify the increment of version numbers. To run the tests, simply install the Jest testing framework and execute the following command in your terminal:
@@ -207,7 +229,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
-* **Ville Perkkio** - *Initial work* - [Website](https://github.com/vilu85) - [@vilutex85](https://twitter.com/vilutex85) - [@vilu85](https://github.com/vilu85) - [@vilu85](https://linkedin.com/in/vilu85)
+* **Ville Perkkio** - *Initial work* - [Website](https://github.com/vilu85) - [@vilu85](https://github.com/vilu85) - [@vilu85](https://gitlab.com/vilu85)
 
 ## License
 
