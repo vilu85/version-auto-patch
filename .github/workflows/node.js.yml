@@ -27,5 +27,18 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm install
+    - run: npm run lint --if-present
     - run: npm run build --if-present
     - run: npm test
+    - name: Check version consistency
+      run: |
+        package_version=$(node -pe "require('./package.json').version")
+        echo "Package version: $package_version"
+
+        readme_version=$(grep -oP "(?<=version-)\d+\.\d+\.\d+" README.md)
+        echo "README version: $readme_version"
+
+        if [[ "$package_version" != "$readme_version" ]]; then
+          echo "Error: Package version and README version mismatch!"
+          exit 1
+        fi
