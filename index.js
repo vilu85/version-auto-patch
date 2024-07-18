@@ -45,10 +45,7 @@ class VersionAutoPatchPlugin {
 	 * @param {number} [options.cooldown] - If specified, prevents the version from being updated more than once in a specified interval (ms).
 	 */
 	constructor(options) {
-		const _options = {
-			disabled: false || (options && options.disabled === true),
-		};
-		if (!_options.disabled) {
+		if (!(options?.disabled === true)) {
 			this.files = options?.files || ['package.json'];
 			this.version = options?.version;
 			this.type = options?.type ?? 'patch';
