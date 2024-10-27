@@ -1,3 +1,9 @@
+## 1.3.0 (2024-10-27)
+
+- Added support for ESM modules.
+- Added option to specify base path for file(s).
+- Updated all development dependencies.
+
 ## 1.2.1 (2023-03-13)
 
 - Fixed an issue where the "package.json" file was not being patched when not explicitly set in the configuration. The plugin now uses "package.json" as the default file if no other file or files have been specified in the configuration.

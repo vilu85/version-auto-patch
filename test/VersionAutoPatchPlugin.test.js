@@ -1,8 +1,5 @@
-const fs = require('fs');
-const path = require('path');
-
 /**
- * Copyright (c) 2023 Ville Perkkio
+ * Copyright (c) 2023-2024 Ville Perkkio
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +20,8 @@ const path = require('path');
  * SOFTWARE.
  *
  */
-
+const fs = require('fs');
+const path = require('path');
 const join = path.join;
 
 const mockFiles = {
@@ -461,6 +459,24 @@ describe('VersionAutoPatchPlugin', () => {
 
 		// Expect the version be the same because the cooldown was active
 		expect(json.version).toBe('1.0.0+beta2');
+	});
+
+	it('should increment the patch version of package.json in the basePath', async () => {
+		// Increment the patch version number using VersionAutoPatchPlugin
+		const versionAutoPatchPlugin = new VersionAutoPatchPlugin({
+			type: 'patch',
+			basePath: __dirname
+		});
+		await versionAutoPatchPlugin.updateVersion();
+
+		// Verify that the version number was incremented correctly
+		const file = join(__dirname, 'package.json');
+		const content = await readFileSync(file, 'utf8');
+		const json = JSON.parse(content);
+
+		expect(fs.writeFile).toHaveBeenCalledTimes(18);
+		expect(json.version).toBe('1.2.4');
+		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.2.4');
 	});
 });
 

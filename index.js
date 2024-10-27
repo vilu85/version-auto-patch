@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023 Ville Perkkio
+ * Copyright (c) 2023-2024 Ville Perkkio
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,7 @@ class VersionAutoPatchPlugin {
 	 * @param {string} [options.version] - If specified, the version will be set to this value instead of being incremented.
 	 * @param {string} [options.type='patch'] - Specifies the type of version update: 'major', 'minor', 'patch', 'prerelease', 'build'.
 	 * @param {number} [options.cooldown] - If specified, prevents the version from being updated more than once in a specified interval (ms).
+	 * @param {string} [options.basePath] - The path to the directory where the plugin is executed.
 	 */
 	constructor(options) {
 		if (!(options?.disabled === true)) {
@@ -52,7 +53,7 @@ class VersionAutoPatchPlugin {
 			this.newVersion = null;
 			this.cooldown = options?.cooldown || 0;
 			this.lastRun = 0;
-			this.context = path.dirname(module.parent.filename);
+			this.context = options?.basePath || this.getContextPath();
 
 			// allows for a single string entry
 			if (
@@ -63,6 +64,14 @@ class VersionAutoPatchPlugin {
 			}
 		} else {
 			this.files = [];
+		}
+	}
+
+	getContextPath() {
+		if(module?.parent?.filename) {
+			return path.dirname(module.parent.filename);
+		} else {
+			return path.dirname(process.cwd());
 		}
 	}
 

@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/version-1.2.3-blue.svg?cacheSeconds=2592000)
+![Version](https://img.shields.io/badge/version-1.3.0-blue.svg?cacheSeconds=2592000)
 ![Node.js](https://github.com/vilu85/version-auto-patch/actions/workflows/node.js.yml/badge.svg?branch=main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#)
 # VersionAutoPatchPlugin
@@ -17,6 +17,7 @@
 	- [Installation](#installation)
 	- [Usage](#usage)
 		- [Options](#options)
+		- [The Purpose of the cooldown Option](#the-purpose-of-the-cooldown-option)
 		- [Webpack plugin](#webpack-plugin)
 		- [Task runners like Gulp and Grunt](#task-runners-like-gulp-and-grunt)
 		- [Other methods](#other-methods)
@@ -50,6 +51,12 @@ Additionally, in order for the plugin to update a version number part, it must b
 npm install version-auto-patch
 ```
 
+or
+
+```sh
+yarn add version-auto-patch
+```
+
 ## Usage
 
 ### Options ###
@@ -57,6 +64,8 @@ npm install version-auto-patch
 VersionAutoPatchPlugin supports the following options, which can be passed as an object in the constructor:
 
 **files**		-			A string or an array of strings indicating the file or files to be patched. By default, the package.json file will be patched.
+
+**basePath**	-			A string indicating the base path to the directory where the plugin is executed. By default, the current working directory will be used.
 
 **disabled** 	*optional*	A boolean value that, if set to true, disables the automatic version patching.
 
@@ -81,7 +90,7 @@ Example of how to automatically increase the patch version during development (`
 
 To add the VersionAutoPatchPlugin to your webpack configuration, simply include it in your list of plugins. Here's an example:
 
-```javascript
+```js
 const VersionAutoPatchPlugin = require("version-auto-patch");
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -101,7 +110,7 @@ In this example, the disabled option is set to true when the NODE_ENV environmen
 
 You can also configure the VersionAutoPatchPlugin to increase the minor version by changing the plugin's options like this:
 
-```javascript
+```js
 const VersionAutoPatchPlugin = require("version-auto-patch");
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -123,7 +132,8 @@ To perform a version update with the same settings as in webpack, you can use th
 
 Here's an example implementation for Gulp:
 
-```javascript
+```js
+// CommonJS Syntax
 const gulp = require('gulp');
 const VersionAutoPatchPlugin = require('version-auto-patch');
 
@@ -143,6 +153,29 @@ gulp.task('update-version', function (cb) {
 	  cb(err);
 	});
 });
+```
+
+```js
+// ES6
+import { task } from 'gulp';
+import { VersionAutoPatchPlugin } from 'version-auto-patch';
+
+const versionPlugin = new VersionAutoPatchPlugin({
+  files: "./package.json",
+  type: "patch"
+});
+
+task('update-version', function (cb) {
+  versionPlugin.updateVersion()
+	.then(() => {
+	  console.log('Version updated!');
+	  cb();
+	})
+	.catch((err) => {
+	  console.error('Error updating version:', err);
+	  cb(err);
+	});
+});
 
 ```
 
@@ -150,7 +183,8 @@ In this example, we create a new instance of the VersionAutoPatchPlugin with the
 
 Here is an example implementation for Gulp that demonstrates how to watch for changes in the code and update the build version accordingly:
 
-```javascript
+```js
+// CommonJS Syntax
 const gulp = require('gulp');
 const VersionAutoPatchPlugin = require('version-auto-patch');
 const versionPlugin = new VersionAutoPatchPlugin( {files: './package.json', type: 'build' });
@@ -170,6 +204,27 @@ gulp.task('watchChanges', function () {
 });
 ```
 
+```js
+// ES6 Syntax
+import { task, watch, series } from 'gulp';
+import { VersionAutoPatchPlugin } from 'version-auto-patch';
+const versionPlugin = new VersionAutoPatchPlugin( {files: './package.json', type: 'build' });
+
+task('update-buildversion', (cb) => {
+	versionPlugin.updateVersion();
+	cb();
+});
+
+task('watchChanges', function () {
+	watch(
+		['./src/*.js'],
+		series(
+			"update-buildversion"
+		)
+	)
+});
+```
+
 In this example, we set up two Gulp tasks: `update-buildversion` and `watchChanges`.
 
 The `update-buildversion` task updates the build version by calling the `updateVersion` method of the VersionAutoPatchPlugin instance.
@@ -182,7 +237,7 @@ This way, whenever a change is made to the code, the build version will be autom
 
 You can obtain the updated version string after running the task by calling the `getNewVersion()` method. This can be useful if you need to use the new version string in other parts of your code or in subsequent build steps.
 
-```javascript
+```js
 const newVersion = versionPlugin.getNewVersion();
 ```
 
@@ -190,7 +245,7 @@ const newVersion = versionPlugin.getNewVersion();
 
 To make use of the cooldown option, simply provide a numeric value representing the cooldown duration in milliseconds when initializing the VersionAutoPatchPlugin. For example:
 
-```javascript
+```js
 const versionPlugin = new VersionAutoPatchPlugin({
   files: "./package.json",
   type: "patch",
@@ -233,6 +288,6 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## License
 
-Copyright © 2023 [Ville Perkkio](https://github.com/vilu85)
+Copyright © 2023-2024 [Ville Perkkio](https://github.com/vilu85)
 
 This project is [MIT](https://opensource.org/license/mit/) licensed.
