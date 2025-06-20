@@ -1,3 +1,7 @@
+## 1.3.1 (2025-06-20)
+
+- Updated all development dependencies.
+
 ## 1.3.0 (2024-10-27)
 
 - Added support for ESM modules.
