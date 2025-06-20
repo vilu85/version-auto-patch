@@ -389,7 +389,7 @@ describe('VersionAutoPatchPlugin', () => {
 
 		expect(fs.writeFile).toHaveBeenCalledTimes(15);
 		expect(json.version).toBe('1.0.0');
-		expect(() => versionAutoPatchPlugin.getNewVersion()).toThrowError(
+		expect(() => versionAutoPatchPlugin.getNewVersion()).toThrow(
 			'Version is not changed yet.'
 		);
 	});
