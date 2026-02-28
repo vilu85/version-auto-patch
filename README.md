@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/version-1.3.2-blue.svg?cacheSeconds=2592000)
+![Version](https://img.shields.io/badge/version-1.3.3-blue.svg?cacheSeconds=2593000)
 ![Node.js](https://github.com/vilu85/version-auto-patch/actions/workflows/node.js.yml/badge.svg?branch=main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#)
 # VersionAutoPatchPlugin
