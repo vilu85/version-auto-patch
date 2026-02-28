@@ -1,3 +1,7 @@
+## 1.3.3 (2026-02-28)
+
+- Updted all dependencies.
+
 ## 1.3.2 (2025-11-03)
 
 - Updated all dependencies.
