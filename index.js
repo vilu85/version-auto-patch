@@ -137,7 +137,7 @@ class VersionAutoPatchPlugin {
 				'Error: Failed to increase ' +
 					this.type +
 					' version number: ' +
-					error.message
+					error.message, { cause: error }
 			);
 		}
 	}

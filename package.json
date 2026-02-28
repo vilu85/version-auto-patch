@@ -14,7 +14,8 @@
   "scripts": {
     "version-auto-patch": "node index.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "lint": "eslint index.js"
+    "lint": "eslint index.js",
+    "lint:fix": "eslint index.js --fix"
   },
   "bin": {
     "version-auto-patch": "index.js"
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.4",
     "@eslint/js": "^10.0.1",
+    "baseline-browser-mapping": "^2.10.0",
     "eslint": "^10.0.2",
     "eslint-plugin-jest": "^29.0.1",
     "globals": "^17.0.0",
