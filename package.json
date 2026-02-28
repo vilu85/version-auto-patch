@@ -32,7 +32,7 @@
   "homepage": "https://github.com/vilu85/version-auto-patch",
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
-    "@eslint/js": "^9.13.0",
+    "@eslint/js": "^10.0.1",
     "eslint": "^10.0.2",
     "eslint-plugin-jest": "^29.0.1",
     "globals": "^17.0.0",
