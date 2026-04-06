@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/version-1.3.3-blue.svg?cacheSeconds=2593000)
+![Version](https://img.shields.io/badge/version-1.4.0-blue.svg?cacheSeconds=2593000)
 ![Node.js](https://github.com/vilu85/version-auto-patch/actions/workflows/node.js.yml/badge.svg?branch=main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](#)
 # VersionAutoPatchPlugin
@@ -10,7 +10,7 @@
 ## Table of contents
 
 - [VersionAutoPatchPlugin](#versionautopatchplugin)
-		- [🏠 Homepage](#-homepage)
+	- [🏠 Homepage](#-homepage)
 	- [Table of contents](#table-of-contents)
 	- [Getting Started](#getting-started)
 	- [Limitations](#limitations)
@@ -21,6 +21,7 @@
 		- [Webpack plugin](#webpack-plugin)
 		- [Task runners like Gulp and Grunt](#task-runners-like-gulp-and-grunt)
 		- [Other methods](#other-methods)
+		- [Version Type Examples](#version-type-examples)
 		- [How to Use the cooldown Option](#how-to-use-the-cooldown-option)
 	- [Running the tests](#running-the-tests)
 	- [Issues](#issues)
@@ -43,7 +44,11 @@ The Version Auto Patch plugin updates the numerical value found at the end of th
 
 However, please note that currently the plugin cannot update the build number from a version number like "1.0.0+21AF26D3----117B344092BD" because the build number does not end with a numeric value.
 
-Additionally, in order for the plugin to update a version number part, it must be present in the original version number. For instance, if the version number does not have a build part (e.g. "1.0.0-beta0.2"), the build number cannot be updated. Similarly, if the version number does not have a pre-release part, it cannot be updated either.
+**New in v1.4.0:** The plugin now automatically adds missing prerelease or build metadata to version numbers. For example:
+- Setting `type: 'prerelease'` on version `1.0.0` will create `1.0.0-1`
+- Setting `type: 'build'` on version `1.0.0` will create `1.0.0+1`
+
+If the prerelease or build part already exists, it will be incremented as usual.
 
 ## Installation
 
@@ -241,6 +246,42 @@ You can obtain the updated version string after running the task by calling the 
 const newVersion = versionPlugin.getNewVersion();
 ```
 
+### Version Type Examples ###
+
+Here are examples of how different version types work:
+
+**Major, Minor, Patch:**
+```js
+// Starting version: 1.2.3
+type: 'major'  // Result: 2.0.0
+type: 'minor'  // Result: 1.3.0
+type: 'patch'  // Result: 1.2.4
+```
+
+**Prerelease** (new in v1.4.0 - automatically adds if missing):
+```js
+// Starting version: 1.0.0
+type: 'prerelease'  // Result: 1.0.0-1
+
+// Starting version: 1.0.0-alpha.1
+type: 'prerelease'  // Result: 1.0.0-alpha.2
+
+// Starting version: 1.0.0-beta.5
+type: 'prerelease'  // Result: 1.0.0-beta.6
+```
+
+**Build** (new in v1.4.0 - automatically adds if missing):
+```js
+// Starting version: 1.0.0
+type: 'build'  // Result: 1.0.0+1
+
+// Starting version: 1.0.0+001
+type: 'build'  // Result: 1.0.0+002
+
+// Starting version: 1.0.0-alpha+001
+type: 'build'  // Result: 1.0.0-alpha+002
+```
+
 ### How to Use the cooldown Option ###
 
 To make use of the cooldown option, simply provide a numeric value representing the cooldown duration in milliseconds when initializing the VersionAutoPatchPlugin. For example:
@@ -288,6 +329,6 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## License
 
-Copyright © 2023-2024 [Ville Perkkio](https://github.com/vilu85)
+Copyright © 2023-2026 [Ville Perkkio](https://github.com/vilu85)
 
 This project is [MIT](https://opensource.org/license/mit/) licensed.

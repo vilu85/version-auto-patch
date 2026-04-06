@@ -1,6 +1,11 @@
+## 1.4.0 (2026-04-06)
+
+- Added support for updating build and pre-release version numbers.
+- Updated all dependencies.
+
 ## 1.3.3 (2026-02-28)
 
-- Updted all dependencies.
+- Updated all dependencies.
 
 ## 1.3.2 (2025-11-03)
 

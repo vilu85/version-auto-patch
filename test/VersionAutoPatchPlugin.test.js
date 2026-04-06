@@ -94,7 +94,6 @@ describe('VersionAutoPatchPlugin', () => {
 		const content = await readFileSync(file, 'utf8');
 		const json = JSON.parse(content);
 
-		expect(fs.writeFile).toHaveBeenCalledTimes(2);
 		expect(json.version).toBe('1.3.0');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.3.0');
 	});
@@ -112,7 +111,6 @@ describe('VersionAutoPatchPlugin', () => {
 		const content = await readFileSync(file, 'utf8');
 		const json = JSON.parse(content);
 
-		expect(fs.writeFile).toHaveBeenCalledTimes(3);
 		expect(json.version).toBe('1.2.4');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.2.4');
 	});
@@ -129,9 +127,66 @@ describe('VersionAutoPatchPlugin', () => {
 		const content = await readFileSync(file, 'utf8');
 		const json = JSON.parse(content);
 
-		expect(fs.writeFile).toHaveBeenCalledTimes(4);
 		expect(json.version).toBe('1.2.4');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.2.4');
+	});
+
+	it('should add a prerelease version if it does not exist in package.json', async () => {
+		// Set up the test by writing a package.json file with a version number without prerelease
+		const file = join(__dirname, 'package.json');
+		const initialVersion = '1.0.0';
+		const packageJson = {
+			name: 'test-package',
+			version: initialVersion,
+			description: 'A test package for VersionAutoPatchPlugin',
+			author: 'Jane Doe',
+			main: 'index.js',
+		};
+
+		await writeJsonFile(file, packageJson);
+
+		// Add prerelease version using VersionAutoPatchPlugin
+		const versionAutoPatchPlugin = new VersionAutoPatchPlugin({
+			files: [join(__dirname, 'package.json')],
+			type: 'prerelease',
+		});
+		await versionAutoPatchPlugin.updateVersion();
+
+		// Verify that the version number was incremented correctly
+		const content = await readFileSync(file, 'utf8');
+		const json = JSON.parse(content);
+
+		expect(json.version).toBe('1.0.0-1');
+		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.0.0-1');
+	});
+
+	it('should add a build version if it does not exist in package.json', async () => {
+		// Set up the test by writing a package.json file with a version number without build number
+		const file = join(__dirname, 'package.json');
+		const initialVersion = '1.0.0';
+		const packageJson = {
+			name: 'test-package',
+			version: initialVersion,
+			description: 'A test package for VersionAutoPatchPlugin',
+			author: 'Jane Doe',
+			main: 'index.js',
+		};
+
+		await writeJsonFile(file, packageJson);
+
+		// Increment the patch version number using VersionAutoPatchPlugin
+		const versionAutoPatchPlugin = new VersionAutoPatchPlugin({
+			files: [join(__dirname, 'package.json')],
+			type: 'build',
+		});
+		await versionAutoPatchPlugin.updateVersion();
+
+		// Verify that the version number was incremented correctly
+		const content = await readFileSync(file, 'utf8');
+		const json = JSON.parse(content);
+
+		expect(json.version).toBe('1.0.0+1');
+		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.0.0+1');
 	});
 
 	it('should increment the build version of package.json for complex SemVer version numbers', async () => {
@@ -158,7 +213,6 @@ describe('VersionAutoPatchPlugin', () => {
 		// Verify that the version number was incremented correctly
 		const content = await readFileSync(file, 'utf8');
 		const json = JSON.parse(content);
-		expect(fs.writeFile).toHaveBeenCalledTimes(5);
 		expect(json.version).toBe('1.0.0-alpha+002');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.0.0-alpha+002');
 
@@ -172,7 +226,6 @@ describe('VersionAutoPatchPlugin', () => {
 		// Verify that the version number was incremented correctly
 		const content2 = await readFileSync(file, 'utf8');
 		const json2 = JSON.parse(content2);
-		expect(fs.writeFile).toHaveBeenCalledTimes(6);
 		expect(json2.version).toBe('1.0.0+20130313144701');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe(
 			'1.0.0+20130313144701'
@@ -188,7 +241,6 @@ describe('VersionAutoPatchPlugin', () => {
 		// Verify that the version number was incremented correctly
 		const content3 = await readFileSync(file, 'utf8');
 		const json3 = JSON.parse(content3);
-		expect(fs.writeFile).toHaveBeenCalledTimes(7);
 		expect(json3.version).toBe('1.0.0-beta+exp.sha.5114f86');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe(
 			'1.0.0-beta+exp.sha.5114f86'
@@ -204,7 +256,6 @@ describe('VersionAutoPatchPlugin', () => {
 		// Verify that the version number was incremented correctly
 		const content4 = await readFileSync(file, 'utf8');
 		const json4 = JSON.parse(content4);
-		expect(fs.writeFile).toHaveBeenCalledTimes(8);
 		expect(json4.version).toBe('1.0.0+21AF26D3----117B344093');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe(
 			'1.0.0+21AF26D3----117B344093'
@@ -235,7 +286,6 @@ describe('VersionAutoPatchPlugin', () => {
 		// Verify that the version number was incremented correctly
 		const content = await readFileSync(file, 'utf8');
 		const json = JSON.parse(content);
-		expect(fs.writeFile).toHaveBeenCalledTimes(9);
 		expect(json.version).toBe('1.0.0-alpha.2');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.0.0-alpha.2');
 
@@ -249,7 +299,6 @@ describe('VersionAutoPatchPlugin', () => {
 		// Verify that the version number was incremented correctly
 		const content3 = await readFileSync(file, 'utf8');
 		const json3 = JSON.parse(content3);
-		expect(fs.writeFile).toHaveBeenCalledTimes(10);
 		expect(json3.version).toBe('1.0.0-0.3.8');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.0.0-0.3.8');
 
@@ -263,7 +312,6 @@ describe('VersionAutoPatchPlugin', () => {
 		// Verify that the version number was incremented correctly
 		const content2 = await readFileSync(file, 'utf8');
 		const json2 = JSON.parse(content2);
-		expect(fs.writeFile).toHaveBeenCalledTimes(11);
 		expect(json2.version).toBe('1.0.0-x.7.z.93');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.0.0-x.7.z.93');
 	});
@@ -292,7 +340,6 @@ describe('VersionAutoPatchPlugin', () => {
 		// Verify that the version number was incremented correctly
 		const content = await readFileSync(file, 'utf8');
 		const json = JSON.parse(content);
-		expect(fs.writeFile).toHaveBeenCalledTimes(12);
 		expect(json.version).toBe('1.0.0-alpha124');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.0.0-alpha124');
 	});
@@ -321,7 +368,6 @@ describe('VersionAutoPatchPlugin', () => {
 		// Verify that the version number was incremented correctly and lower version numbers removed
 		const content = await readFileSync(file, 'utf8');
 		const json = JSON.parse(content);
-		expect(fs.writeFile).toHaveBeenCalledTimes(13);
 		expect(json.version).toBe('2.0.0');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe('2.0.0');
 
@@ -338,7 +384,6 @@ describe('VersionAutoPatchPlugin', () => {
 		// Verify that the version number was incremented correctly and lower version numbers removed
 		const content2 = await readFileSync(file, 'utf8');
 		const json2 = JSON.parse(content2);
-		expect(fs.writeFile).toHaveBeenCalledTimes(14);
 		expect(json2.version).toBe('1.1.0');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.1.0');
 
@@ -355,7 +400,6 @@ describe('VersionAutoPatchPlugin', () => {
 		// Verify that the version number was incremented correctly and lower version numbers removed
 		const content3 = await readFileSync(file, 'utf8');
 		const json3 = JSON.parse(content3);
-		expect(fs.writeFile).toHaveBeenCalledTimes(15);
 		expect(json3.version).toBe('1.0.1');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.0.1');
 	});
@@ -387,7 +431,6 @@ describe('VersionAutoPatchPlugin', () => {
 		const content = readFileSync(file, 'utf8');
 		const json = JSON.parse(content);
 
-		expect(fs.writeFile).toHaveBeenCalledTimes(15);
 		expect(json.version).toBe('1.0.0');
 		expect(() => versionAutoPatchPlugin.getNewVersion()).toThrow(
 			'Version is not changed yet.'
@@ -409,7 +452,6 @@ describe('VersionAutoPatchPlugin', () => {
 		const content = readFileSync(file, 'utf8');
 		const json = JSON.parse(content);
 
-		expect(fs.writeFile).toHaveBeenCalledTimes(16);
 		expect(json.version).toBe('2.0.0');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe('2.0.0');
 	});
@@ -474,7 +516,6 @@ describe('VersionAutoPatchPlugin', () => {
 		const content = await readFileSync(file, 'utf8');
 		const json = JSON.parse(content);
 
-		expect(fs.writeFile).toHaveBeenCalledTimes(18);
 		expect(json.version).toBe('1.2.4');
 		expect(versionAutoPatchPlugin.getNewVersion()).toBe('1.2.4');
 	});

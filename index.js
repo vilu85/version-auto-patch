@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023-2024 Ville Perkkio
+ * Copyright (c) 2023-2026 Ville Perkkio
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -102,15 +102,25 @@ class VersionAutoPatchPlugin {
 				}
 			} else {
 				const patchPart = oldVersion[incrementType + 1];
-				const numericStartOffset = patchPart.search(/\d+$/);
-				const patchedNumericPart =
-					parseInt(patchPart.substring(numericStartOffset)) + 1;
-				const paddedNumericPart = patchedNumericPart
-					.toString()
-					.padStart(patchPart.length - numericStartOffset, '0');
-				substParts[incrementType] =
-					patchPart.substring(0, numericStartOffset) +
-					paddedNumericPart;
+				if (!patchPart) {
+					if (incrementType === 4) {
+						substParts[3] = '-';
+						substParts[4] = '1';
+					} else if (incrementType === 6) {
+						substParts[5] = '+';
+						substParts[6] = '1';
+					}
+				} else {
+					const numericStartOffset = patchPart.search(/\d+$/);
+					const patchedNumericPart =
+						parseInt(patchPart.substring(numericStartOffset)) + 1;
+					const paddedNumericPart = patchedNumericPart
+						.toString()
+						.padStart(patchPart.length - numericStartOffset, '0');
+					substParts[incrementType] =
+						patchPart.substring(0, numericStartOffset) +
+						paddedNumericPart;
+				}
 			}
 
 			for (let index = substParts.length; index > 2; index--) {
